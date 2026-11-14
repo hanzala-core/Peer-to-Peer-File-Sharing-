@@ -40,6 +40,16 @@ func (sm *SwarmManager) handleNewPeer(peer Peer) error{
 	return nil
 }
 
+func (sm *SwarmManager) GetPeer(addr net.Addr) (Peer, bool){
+	
+	peer, ok := sm.peers[addr]
+	if !ok{
+		return nil, false
+	}
+	return peer, true
+}
+
+
 func (sm *SwarmManager) RemovePeer(addr net.Addr){
 	sm.peerLock.Lock()
 	defer sm.peerLock.Unlock()
@@ -63,7 +73,7 @@ func (sm *SwarmManager) Broadcast(payload []byte){
 
 func (sm *SwarmManager) Start(){
 	// Start the background listening loop
-	go sm.Transport.ListenAndAccpet()
+	go sm.Transport.ListenAndAccept()
 
 	for msg := range sm.Transport.Consume() {
 		if err:= sm.OnMessage(msg) ; err != nil {
